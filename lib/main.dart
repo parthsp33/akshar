@@ -1,20 +1,15 @@
 import 'dart:ui';
-import 'dart:ui_web' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:html' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'platform_utils.dart' as platform_utils;
 
 void main() {
   // Register Google Maps iframe
-  // ignore: undefined_prefixed_name
-  ui.platformViewRegistry.registerViewFactory(
+  platform_utils.registerViewFactory(
     'google-maps-view',
-    (int viewId) => html.IFrameElement()
-      ..src = "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3671.428782976!2d72.65313281141755!3d23.00890666613327!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjPCsDAwJzM1LjEiTiA3MsKwMzk'MjAuNSJF!5e0!3m2!1sen!2sin!4v1739770542345!5m2!1sen!2sin"
-      ..style.border = 'none'
-      ..style.width = '100%'
-      ..style.height = '100%',
+    "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3671.428782976!2d72.65313281141755!3d23.00890666613327!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjPCsDAwJzM1LjEiTiA3MsKwMzk'MjAuNSJF!5e0!3m2!1sen!2sin!4v1739770542345!5m2!1sen!2sin",
   );
   runApp(const AksharApp());
 }
@@ -117,57 +112,59 @@ class _HomePageState extends State<HomePage> {
       top: 0,
       left: 0,
       right: 0,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-        decoration: BoxDecoration(
-          color: _isNavbarGlass ? Colors.black.withOpacity(0.8) : Colors.transparent,
-          border: _isNavbarGlass ? const Border(bottom: BorderSide(color: Colors.white12)) : null,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.medical_services, color: Color(0xFFFF6B00), size: 30),
-                const SizedBox(width: 10),
-                Text(
-                  'AKSHAR',
-                  style: GoogleFonts.urbanist(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -1),
-                ),
-                Text(
-                  'DENTAL',
-                  style: GoogleFonts.urbanist(fontSize: 24, fontWeight: FontWeight.w800, color: const Color(0xFFFF6B00)),
-                ),
-              ],
-            ),
-            if (!isMobile)
+      child: SafeArea(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: isMobile ? 20 : 40),
+          decoration: BoxDecoration(
+            color: _isNavbarGlass ? Colors.black.withOpacity(0.8) : Colors.transparent,
+            border: _isNavbarGlass ? const Border(bottom: BorderSide(color: Colors.white12)) : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Row(
                 children: [
-                  _navLink('About', () => _scrollTo(_aboutKey)),
-                  const SizedBox(width: 30),
-                  _navLink('Services', () => _scrollTo(_servicesKey)),
-                  const SizedBox(width: 30),
-                  ElevatedButton(
-                    onPressed: () => _scrollTo(_bookingKey),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B00),
-                      foregroundColor: Colors.white,
-                      shape: Theme.of(context).platform == TargetPlatform.iOS || Theme.of(context).platform == TargetPlatform.android ? null : RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)), 
-                      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
-                    ),
-                    child: const Text('Book Now', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Icon(Icons.medical_services, color: Color(0xFFFF6B00), size: 30),
+                  const SizedBox(width: 10),
+                  Text(
+                    'AKSHAR',
+                    style: GoogleFonts.urbanist(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -1),
+                  ),
+                  Text(
+                    'DENTAL',
+                    style: GoogleFonts.urbanist(fontSize: 24, fontWeight: FontWeight.w800, color: const Color(0xFFFF6B00)),
                   ),
                 ],
-              )
-            else
-              Builder(
-                builder: (context) => IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                ),
               ),
-          ],
+              if (!isMobile)
+                Row(
+                  children: [
+                    _navLink('About', () => _scrollTo(_aboutKey)),
+                    const SizedBox(width: 30),
+                    _navLink('Services', () => _scrollTo(_servicesKey)),
+                    const SizedBox(width: 30),
+                    ElevatedButton(
+                      onPressed: () => _scrollTo(_bookingKey),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF6B00),
+                        foregroundColor: Colors.white,
+                        shape: Theme.of(context).platform == TargetPlatform.iOS || Theme.of(context).platform == TargetPlatform.android ? null : RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)), 
+                        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                      ),
+                      child: const Text('Book Now', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                )
+              else
+                Builder(
+                  builder: (context) => IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.white),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -210,7 +207,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       key: _heroKey,
       constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-      padding: const EdgeInsets.symmetric(horizontal: 40),
+      padding: EdgeInsets.fromLTRB(isMobile ? 20 : 40, isMobile ? 120 : 0, isMobile ? 20 : 40, 0),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -264,16 +261,17 @@ class _HomePageState extends State<HomePage> {
           style: const TextStyle(color: Color(0xFFA0A0A0), fontSize: 18),
         ),
         const SizedBox(height: 40),
-        Row(
-          mainAxisAlignment: isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,
+        Wrap(
+          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+          spacing: 20,
+          runSpacing: 20,
           children: [
             ElevatedButton.icon(
               onPressed: () {},
-              icon: const Icon(Icons.chat_bubble_outline),
-              label: const Text('WhatsApp Us'),
-              style: _btnStyle(const Color(0xFF00A3FF)),
+              icon: const Icon(Icons.chat),
+              label: const Text('Chat on WhatsApp'),
+              style: _btnStyle(const Color(0xFF25D366)),
             ),
-            const SizedBox(width: 20),
             ElevatedButton(
               onPressed: () => _scrollTo(_bookingKey),
               style: _btnStyle(const Color(0xFFFF6B00)),
@@ -294,7 +292,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildInfoSection(bool isMobile) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
+      padding: EdgeInsets.symmetric(vertical: 60, horizontal: isMobile ? 20 : 40),
       child: isMobile 
         ? Column(children: [
             _infoCard('🕒', 'Working Hours', 'Mon - Sat: 9:00 AM - 8:00 PM\nSun: Emergency Only'),
@@ -331,7 +329,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildAboutSection(bool isMobile) {
     return Container(
       key: _aboutKey,
-      padding: const EdgeInsets.all(80),
+      padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80, horizontal: isMobile ? 20 : 80),
       child: Flex(
         direction: isMobile ? Axis.vertical : Axis.horizontal,
         children: [
@@ -359,7 +357,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildServicesSection(bool isMobile) {
     return Container(
       key: _servicesKey,
-      padding: const EdgeInsets.all(80),
+      padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80, horizontal: isMobile ? 20 : 80),
       child: Column(
         children: [
           _badge('Clinical Excellence'),
@@ -372,7 +370,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisCount: isMobile ? 1 : 3,
             mainAxisSpacing: 20,
             crossAxisSpacing: 20,
-            childAspectRatio: isMobile ? 1.2 : 0.85,
+            childAspectRatio: isMobile ? 0.85 : 0.85,
             children: [
               _serviceCard('Laser Dentistry', 'Pain-free gum care treatments.', 'assets/images/gallery-1.png'),
               _serviceCard('Dental Implants', 'Permanent solutions for missing teeth.', null, icon: '🦷'),
@@ -386,35 +384,33 @@ class _HomePageState extends State<HomePage> {
 
   Widget _serviceCard(String title, String desc, String? img, {String? icon}) {
     return _glassContainer(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (img != null) 
-              ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(16)), child: Image.asset(img, width: double.infinity, height: 200, fit: BoxFit.cover))
-            else if (icon != null)
-               Padding(padding: const EdgeInsets.all(20), child: Text(icon, style: const TextStyle(fontSize: 60))),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                  Text(desc, style: const TextStyle(color: Color(0xFFA0A0A0))),
-                ],
-              ),
-            )
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (img != null) 
+            ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(16)), child: Image.asset(img, width: double.infinity, height: 200, fit: BoxFit.cover))
+          else if (icon != null)
+             Padding(padding: const EdgeInsets.all(20), child: Text(icon, style: const TextStyle(fontSize: 60))),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
+                Text(desc, style: const TextStyle(color: Color(0xFFA0A0A0))),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
 
   Widget _buildFAQSection(bool isMobile) {
     return Container(
-      padding: const EdgeInsets.all(80),
+      padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80, horizontal: isMobile ? 20 : 80),
       child: Column(
         children: [
           _badge('Common Queries'),
@@ -443,9 +439,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildBookingSection(bool isMobile) {
     return Container(
       key: _bookingKey,
-      padding: const EdgeInsets.all(80),
+      padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80, horizontal: isMobile ? 20 : 80),
       child: _glassContainer(
-        padding: const EdgeInsets.all(60),
+        padding: EdgeInsets.symmetric(vertical: isMobile ? 30 : 60, horizontal: isMobile ? 20 : 60),
         child: Column(
           children: [
             const Text('Book Your Visit', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
@@ -504,7 +500,7 @@ class _HomePageState extends State<HomePage> {
             }
           },
           style: _btnStyle(const Color(0xFFFF6B00), width: double.infinity),
-          child: const Padding(padding: EdgeInsets.all(16.0), child: Text('Send Request')),
+          child: const Text('Send Request'),
         ),
       ],
     );
@@ -524,16 +520,25 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildFooter(bool isMobile) {
     return _glassContainer(
-      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
-      child: Row(
+      padding: EdgeInsets.symmetric(vertical: 60, horizontal: isMobile ? 20 : 40),
+      child: Flex(
+        direction: isMobile ? Axis.vertical : Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.center,
         children: [
-          const Text('© 2026 Akshar Dental Clinic. All Rights Reserved.'),
-          Row(children: [
-            _socialIcon(Icons.facebook),
-            const SizedBox(width: 10),
-            _socialIcon(Icons.camera_alt),
-          ]),
+          Text(
+            '© 2026 Akshar Dental Clinic. All Rights Reserved.',
+            textAlign: isMobile ? TextAlign.center : TextAlign.start,
+          ),
+          if (isMobile) const SizedBox(height: 20),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _socialIcon(Icons.facebook),
+              const SizedBox(width: 10),
+              _socialIcon(Icons.camera_alt),
+            ],
+          ),
         ],
       ),
     );
@@ -579,7 +584,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildLocationSection(bool isMobile) {
     return Container(
-      padding: const EdgeInsets.all(80),
+      padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80, horizontal: isMobile ? 20 : 80),
       child: Column(
         children: [
           _badge('Visit Us'),
@@ -593,7 +598,33 @@ class _HomePageState extends State<HomePage> {
               child: SizedBox(
                 height: 450,
                 width: double.infinity,
-                child: const HtmlElementView(viewType: 'google-maps-view'),
+                child: kIsWeb 
+                  ? const HtmlElementView(viewType: 'google-maps-view')
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.map_outlined, size: 60, color: Color(0xFFFF6B00)),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'View on Google Maps',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              // Fallback to the coordinates if the short link is unknown
+                              const fallbackUrl = "https://www.google.com/maps/search/?api=1&query=23.00975,72.655694";
+                              if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
+                                await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            style: _btnStyle(const Color(0xFFFF6B00)),
+                            child: const Text('Open Maps'),
+                          ),
+                        ],
+                      ),
+                    ),
               ),
             ),
           ),
