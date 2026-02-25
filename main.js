@@ -1,60 +1,54 @@
-// Mobile Menu Toggle
 const menuToggle = document.querySelector('.menu-toggle');
 const navLinks = document.querySelector('.nav-links');
 
 if (menuToggle && navLinks) {
-    menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('active');
-        navLinks.classList.toggle('active');
-    });
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
 
-    // Close menu when clicking a link
-    navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            menuToggle.classList.remove('active');
-            navLinks.classList.remove('active');
-        });
-    });
+  navLinks.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => navLinks.classList.remove('active'));
+  });
 }
 
-// Navbar Scroll Effect
 const navbar = document.querySelector('.navbar');
 window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(0, 0, 0, 0.8)';
-        navbar.style.padding = '10px 0';
-    } else {
-        navbar.style.background = 'var(--glass-bg)';
-        navbar.style.padding = '15px 0';
-    }
+  if (!navbar) return;
+  navbar.style.background = window.scrollY > 50 ? 'rgba(0, 0, 0, 0.86)' : 'var(--glass-bg)';
+  navbar.style.padding = window.scrollY > 50 ? '10px 0' : '16px 0';
 });
 
-// Smooth Scroll for Anchors
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  anchor.addEventListener('click', function (event) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (!target) return;
+    event.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth' });
+  });
 });
 
-// Form Submission Handling
 const bookingForm = document.getElementById('booking-form');
 if (bookingForm) {
-    bookingForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const btn = bookingForm.querySelector('button');
-        const originalText = btn.innerText;
-        btn.innerText = 'Sending...';
-        btn.disabled = true;
+  bookingForm.addEventListener('submit', (event) => {
+    event.preventDefault();
 
-        // Simulate API Call
-        setTimeout(() => {
-            alert('Request Sent Successfully! We will contact you shortly.');
-            btn.innerText = originalText;
-            btn.disabled = false;
-            bookingForm.reset();
-        }, 2000);
-    });
+    const name = document.getElementById('name')?.value?.trim();
+    const phone = document.getElementById('phone')?.value?.trim();
+    const service = document.getElementById('service')?.value || 'Consultation';
+    const preference = document.getElementById('preference')?.value || 'Not specified';
+
+    const message = [
+      'Hello Akshar Dental Clinic,',
+      '',
+      'I would like to book an appointment.',
+      '',
+      `*Name:* ${name}`,
+      `*Phone:* ${phone}`,
+      `*Service:* ${service}`,
+      `*Preferred Date & Time:* ${preference}`,
+    ].join('\n');
+
+    window.open(`https://wa.me/919067026607?text=${encodeURIComponent(message)}`, '_blank');
+    bookingForm.reset();
+  });
 }
